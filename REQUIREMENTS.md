@@ -7,7 +7,7 @@
 ## Definition of Done (Project-wide)
 - [x] All MCP tools can be called via MCP client without errors
 - [x] Path traversal attacks confirmed unable to break out of context directory
-- [ ] Server runs with a single command locally and on VPS
+- [x] Server runs with a single command locally and on VPS
 - [x] All env vars documented in .env.example
 
 ---
@@ -109,25 +109,25 @@
 
 ### Feature: As a developer, I want the server running persistently on VPS and accessible via custom domain through Cloudflare Tunnel, so that the MCP server can be accessed from anywhere.
 
-#### Task: [DevOps] Setup server build and PM2 on VPS
+#### Task: [DevOps] Setup server build and PM2 on VPS ✅
 **Description:** On VPS: clone repo, install dependencies, build TypeScript. Install PM2. Create ecosystem.config.js. Setup pm2 startup for auto-start after reboot.
 **Acceptance Criteria:**
-- [ ] Server runs via PM2 with status online
-- [ ] After VPS reboot, server starts automatically
-- [ ] Server logs accessible via pm2 logs
-- [ ] pm2 restart applies code updates without significant downtime
+- [x] Server runs via PM2 with status online
+- [x] After VPS reboot, server starts automatically
+- [x] Server logs accessible via pm2 logs
+- [x] pm2 restart applies code updates without significant downtime
 
-#### Task: [DevOps] Setup Cloudflare Tunnel to VPS
+#### Task: [DevOps] Setup Cloudflare Tunnel to VPS ✅
 **Description:** Install cloudflared on VPS. Authenticate, create tunnel, configure routing to localhost:PORT. Point custom domain to tunnel. Run cloudflared via PM2 for persistence.
 **Acceptance Criteria:**
-- [ ] Custom domain resolves to MCP server
-- [ ] HTTPS active automatically via Cloudflare
-- [ ] cloudflared runs persistently and auto-restarts on crash
-- [ ] MCP client can connect via domain URL, not VPS IP
+- [x] Custom domain resolves to MCP server
+- [x] HTTPS active automatically via Cloudflare
+- [x] cloudflared runs persistently and auto-restarts on crash
+- [x] MCP client can connect via domain URL, not VPS IP
 
-#### Task: [DevOps] Document deployment and update workflow
+#### Task: [DevOps] Document deployment and update workflow ✅
 **Description:** Add "Deployment" section to README.md: fresh deploy steps, how to update code, how to check tunnel status, troubleshooting.
 **Acceptance Criteria:**
-- [ ] Fresh deployment to a new VPS can be done by following README alone
-- [ ] Code update documented in 5 steps or fewer
-- [ ] Troubleshooting covers at least 3 common error scenarios
+- [x] Fresh deployment to a new VPS can be done by following README alone
+- [x] Code update documented in 5 steps or fewer
+- [x] Troubleshooting covers at least 3 common error scenarios
