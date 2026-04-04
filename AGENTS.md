@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-MCP server that exposes personal context files (personal, work, projects, social) to an AI coding agent via HTTP/SSE transport. The server provides four tools: `list_files`, `read_file`, `search_context`, and `edit_file`.
+MCP server that exposes personal context files (personal, work, projects, social) to an AI coding agent via HTTP/SSE transport. The server provides seven tools: `list_files`, `read_file`, `search_context`, `list_directories`, `edit_file`, `create_file`, and `delete_file`.
 
 ## Planning
 

@@ -10,6 +10,8 @@ import { registerReadFile } from './tools/readFile.js';
 import { registerSearchContext } from './tools/searchContext.js';
 import { registerListDirectories } from './tools/listDirectories.js';
 import { registerEditFile } from './tools/editFile.js';
+import { registerCreateFile } from './tools/createFile.js';
+import { registerDeleteFile } from './tools/deleteFile.js';
 
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
@@ -20,6 +22,10 @@ let SERVER_INSTRUCTIONS: string;
 try {
   SERVER_INSTRUCTIONS = readFileSync(welcomeFile, 'utf-8');
 } catch {
+  console.warn(
+    `Warning: Welcome file not found at "${welcomeFile}". ` +
+      `Check your WELCOME_FILE env var. Using fallback instructions.`,
+  );
   SERVER_INSTRUCTIONS =
     'This server provides access to personal context files. Call list_files to get started.';
 }
@@ -46,6 +52,8 @@ app.get('/sse', async (req, res) => {
   registerSearchContext(server);
   registerListDirectories(server);
   registerEditFile(server);
+  registerCreateFile(server);
+  registerDeleteFile(server);
 
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
@@ -86,6 +94,8 @@ app.post('/mcp', async (req, res) => {
   registerSearchContext(server);
   registerListDirectories(server);
   registerEditFile(server);
+  registerCreateFile(server);
+  registerDeleteFile(server);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // Stateless mode

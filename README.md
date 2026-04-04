@@ -192,6 +192,40 @@ List subdirectories in the context directory.
 |-----------|------|----------|-------------|
 | `directory` | string | No | Parent directory to list subdirectories from |
 
+### `create_file`
+Create a new file in the context directory with specified content.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `path` | string | Yes | Relative path for the new file (e.g. `"work/new-doc.md"`) |
+| `content` | string | Yes | Content to write to the file |
+
+**Example:**
+```json
+{
+  "path": "projects/new-project.md",
+  "content": "# New Project\n\nProject description here."
+}
+```
+
+**Note:** Parent directories are automatically created if they don't exist. The tool rejects if the file already exists or if the path is invalid.
+
+### `delete_file`
+Delete a file from the context directory.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `path` | string | Yes | Relative path to the file to delete (e.g. `"work/old-doc.md"`) |
+
+**Example:**
+```json
+{
+  "path": "projects/archived-project.md"
+}
+```
+
+**Note:** The tool only deletes files (not directories) and validates the file exists before deletion.
+
 ## Server Instructions
 
 The server can provide onboarding instructions to AI agents via a WELCOME.md file:
