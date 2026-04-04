@@ -9,6 +9,7 @@ function listDirsRecursive(dir: string, contextDir: string): string[] {
   const results: string[] = [];
 
   for (const entry of entries) {
+    if (entry.name.startsWith('.')) continue;
     if (entry.isDirectory()) {
       const fullPath = path.join(dir, entry.name);
       results.push(path.relative(contextDir, fullPath));

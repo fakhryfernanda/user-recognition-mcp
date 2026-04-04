@@ -10,6 +10,14 @@ export function registerReadFile(server: McpServer): void {
     { path: z.string().min(1) },
     ({ path: filePath }) => {
       try {
+        const basename = filePath.split('/').pop() ?? '';
+        if (basename.startsWith('.')) {
+          return {
+            content: [{ type: 'text', text: `File not found: "${filePath}"` }],
+            isError: true,
+          };
+        }
+
         const resolved = resolveSafePath(filePath);
 
         if (!fs.existsSync(resolved)) {

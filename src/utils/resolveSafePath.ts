@@ -39,6 +39,7 @@ export function listFilesRecursive(dir: string): string[] {
   const results: string[] = [];
 
   for (const entry of entries) {
+    if (entry.name.startsWith('.')) continue;
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...listFilesRecursive(fullPath));
