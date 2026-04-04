@@ -12,6 +12,7 @@ import { registerListDirectories } from './tools/listDirectories.js';
 import { registerEditFile } from './tools/editFile.js';
 import { registerCreateFile } from './tools/createFile.js';
 import { registerDeleteFile } from './tools/deleteFile.js';
+import { registerWriteFile } from './tools/writeFile.js';
 
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
@@ -54,6 +55,7 @@ app.get('/sse', async (req, res) => {
   registerEditFile(server);
   registerCreateFile(server);
   registerDeleteFile(server);
+  registerWriteFile(server);
 
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
@@ -96,6 +98,7 @@ app.post('/mcp', async (req, res) => {
   registerEditFile(server);
   registerCreateFile(server);
   registerDeleteFile(server);
+  registerWriteFile(server);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // Stateless mode

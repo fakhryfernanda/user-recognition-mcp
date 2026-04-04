@@ -6,28 +6,14 @@ import { resolveSafePath, SecurityError } from '../utils/resolveSafePath.js';
 export function registerEditFile(server: McpServer): void {
   server.tool(
     'edit_file',
-    'Edit a context file by replacing specific lines. Line numbers are 1-indexed.',
+    'Edit a context file by replacing text. Provide the exact oldText to find and the newText to replace it with. oldText must match exactly once in the file.',
     {
       path: z.string().min(1),
-      startLine: z.number().int().positive(),
-      endLine: z.number().int().positive(),
-      newContent: z.string(),
+      oldText: z.string().min(1),
+      newText: z.string(),
     },
-    ({ path: filePath, startLine, endLine, newContent }) => {
+    ({ path: filePath, oldText, newText }) => {
       try {
-        // Validate line range
-        if (startLine > endLine) {
-          return {
-            content: [
-              {
-                type: 'text',
-                text: `Invalid line range: startLine (${startLine}) cannot be greater than endLine (${endLine})`,
-              },
-            ],
-            isError: true,
-          };
-        }
-
         // Reject hidden files
         const basename = filePath.split('/').pop() ?? '';
         if (basename.startsWith('.')) {
@@ -56,48 +42,51 @@ export function registerEditFile(server: McpServer): void {
           };
         }
 
-        // Read file and split into lines
+        // Read file content
         const content = fs.readFileSync(resolved, 'utf-8');
-        const lines = content.split('\n');
 
-        // Validate line numbers are within bounds
-        if (startLine > lines.length) {
+        // Find all occurrences of oldText
+        const firstIndex = content.indexOf(oldText);
+        if (firstIndex === -1) {
           return {
             content: [
               {
                 type: 'text',
-                text: `startLine (${startLine}) is beyond end of file (${lines.length} lines)`,
+                text: `oldText not found in "${filePath}". Ensure the text matches exactly (including whitespace and newlines).`,
               },
             ],
             isError: true,
           };
         }
 
-        if (endLine > lines.length) {
+        // Check for multiple occurrences
+        const lastIndex = content.lastIndexOf(oldText);
+        if (firstIndex !== lastIndex) {
           return {
             content: [
               {
                 type: 'text',
-                text: `endLine (${endLine}) is beyond end of file (${lines.length} lines)`,
+                text: `oldText matches multiple locations in "${filePath}". Provide more context to make it unique.`,
               },
             ],
             isError: true,
           };
         }
 
-        // Replace lines (convert from 1-indexed to 0-indexed)
-        const newLines = newContent.split('\n');
-        lines.splice(startLine - 1, endLine - startLine + 1, ...newLines);
+        // Perform the replacement
+        const newContent =
+          content.slice(0, firstIndex) + newText + content.slice(firstIndex + oldText.length);
 
         // Write back to file
-        fs.writeFileSync(resolved, lines.join('\n'), 'utf-8');
+        fs.writeFileSync(resolved, newContent, 'utf-8');
 
-        const linesReplaced = endLine - startLine + 1;
+        const bytesChanged = newText.length - oldText.length;
+        const direction = bytesChanged >= 0 ? '+' : '';
         return {
           content: [
             {
               type: 'text',
-              text: `Successfully edited "${filePath}": replaced ${linesReplaced} line(s) (${startLine}-${endLine}) with ${newLines.length} line(s)`,
+              text: `Successfully edited "${filePath}": replaced ${oldText.length} character(s) with ${newText.length} character(s) (${direction}${bytesChanged} bytes)`,
             },
           ],
         };
