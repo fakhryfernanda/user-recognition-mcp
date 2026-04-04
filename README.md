@@ -185,12 +185,33 @@ Edit a context file by replacing specific lines. Line numbers are 1-indexed.
 
 **Note:** The tool overwrites the specified line range. Multi-line `newContent` should use `\n` for line breaks.
 
+### `list_directories`
+List subdirectories in the context directory.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `directory` | string | No | Parent directory to list subdirectories from |
+
+## Server Instructions
+
+The server can provide onboarding instructions to AI agents via a WELCOME.md file:
+
+1. Create `context/WELCOME.md` with your onboarding content
+2. The server automatically reads it at startup and provides it as instructions to connecting agents
+3. If the file doesn't exist, a default fallback message is used
+
+**Example WELCOME.md structure:**
+- Overview of available tools
+- Getting started guide (e.g., "Read MEMORY.md first")
+- Navigation strategy and workspace structure
+
 ## Environment variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3000` | Port the server listens on |
 | `CONTEXT_DIR` | `./context` | Absolute or relative path to the context directory |
+| `WELCOME_FILE` | `./context/WELCOME.md` | Path to the server instructions file for AI agents |
 
 ---
 

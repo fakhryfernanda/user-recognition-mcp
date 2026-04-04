@@ -1,4 +1,6 @@
 import 'dotenv/config';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import express from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
@@ -11,6 +13,17 @@ import { registerEditFile } from './tools/editFile.js';
 
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
+const welcomePath = process.env.WELCOME_FILE ?? './context/WELCOME.md';
+const welcomeFile = resolve(process.cwd(), welcomePath);
+let SERVER_INSTRUCTIONS: string;
+
+try {
+  SERVER_INSTRUCTIONS = readFileSync(welcomeFile, 'utf-8');
+} catch {
+  SERVER_INSTRUCTIONS =
+    'This server provides access to personal context files. Call list_files to get started.';
+}
+
 const app = express();
 app.use(express.json());
 
@@ -18,10 +31,15 @@ app.use(express.json());
 const transports: Record<string, SSEServerTransport> = {};
 
 app.get('/sse', async (req, res) => {
-  const server = new McpServer({
-    name: 'user-recognition',
-    version: '1.0.0',
-  });
+  const server = new McpServer(
+    {
+      name: 'user-recognition',
+      version: '1.0.0',
+    },
+    {
+      instructions: SERVER_INSTRUCTIONS,
+    },
+  );
 
   registerListFiles(server);
   registerReadFile(server);
@@ -53,10 +71,15 @@ app.post('/messages', async (req, res) => {
 
 // Streamable HTTP transport endpoint
 app.post('/mcp', async (req, res) => {
-  const server = new McpServer({
-    name: 'user-recognition',
-    version: '1.0.0',
-  });
+  const server = new McpServer(
+    {
+      name: 'user-recognition',
+      version: '1.0.0',
+    },
+    {
+      instructions: SERVER_INSTRUCTIONS,
+    },
+  );
 
   registerListFiles(server);
   registerReadFile(server);
