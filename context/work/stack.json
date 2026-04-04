@@ -1,0 +1,8 @@
+{
+  "languages": ["TypeScript", "Python", "Go", "Rust"],
+  "frameworks": ["Node.js", "Express", "FastAPI", "React"],
+  "databases": ["PostgreSQL", "MongoDB", "Redis"],
+  "tools": ["Docker", "Kubernetes", "Git", "VS Code"],
+  "cloud": ["AWS", "Google Cloud", "Cloudflare"],
+  "currentFocus": "MCP servers and AI-assisted development"
+}
