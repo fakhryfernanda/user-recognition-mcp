@@ -6,6 +6,7 @@ import { registerListFiles } from './tools/listFiles.js';
 import { registerReadFile } from './tools/readFile.js';
 import { registerSearchContext } from './tools/searchContext.js';
 import { registerListDirectories } from './tools/listDirectories.js';
+import { registerEditFile } from './tools/editFile.js';
 
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
@@ -24,6 +25,7 @@ app.get('/sse', async (req, res) => {
   registerReadFile(server);
   registerSearchContext(server);
   registerListDirectories(server);
+  registerEditFile(server);
 
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;

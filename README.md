@@ -116,6 +116,28 @@ Full-text search across all context files. Case-insensitive.
 
 Returns an array of `{ path, snippet, lineNumber }` objects.
 
+### `edit_file`
+Edit a context file by replacing specific lines. Line numbers are 1-indexed.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `path` | string | Yes | Relative path to the file (e.g. `"personal/background.md"`) |
+| `startLine` | number | Yes | First line to replace (1-indexed) |
+| `endLine` | number | Yes | Last line to replace (1-indexed, inclusive) |
+| `newContent` | string | Yes | New content to replace the specified lines |
+
+**Example:** To replace lines 5-7 with new text:
+```json
+{
+  "path": "work/stack.json",
+  "startLine": 5,
+  "endLine": 7,
+  "newContent": "  \"language\": \"TypeScript\",\n  \"framework\": \"Node.js\""
+}
+```
+
+**Note:** The tool overwrites the specified line range. Multi-line `newContent` should use `\n` for line breaks.
+
 ## Environment variables
 
 | Variable | Default | Description |
