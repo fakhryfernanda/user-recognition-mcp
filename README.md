@@ -25,15 +25,66 @@ npm run dev
 npm run build && npm start
 ```
 
-The server starts on the port defined in `.env` (default: `3000`).
+The server starts on the port defined in `.env` (default: `3001`).
 
-## Connecting via mcp-inspector
+## Connecting
 
+### Via mcp-inspector
+
+**Local development:**
 ```bash
-npx @modelcontextprotocol/inspector http://localhost:3000/sse
+npx @modelcontextprotocol/inspector http://localhost:3001/sse
 ```
 
-Open the inspector UI in your browser. All three tools will appear in the tool list.
+**Production (via Cloudflare Tunnel):**
+```bash
+npx @modelcontextprotocol/inspector https://mcp.fakhryfernanda.my.id/sse
+```
+
+Open the inspector UI in your browser. All tools will appear in the tool list.
+
+### Via MCP client config (Claude Desktop / Cursor / Windsurf)
+
+Add this to your MCP client's `mcp.json` or equivalent config:
+
+```json
+{
+  "mcpServers": {
+    "user-recognition": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/inspector",
+        "https://mcp.fakhryfernanda.my.id/sse"
+      ]
+    }
+  }
+}
+```
+
+Or with a direct HTTP SSE transport if your client supports it:
+
+```json
+{
+  "mcpServers": {
+    "user-recognition": {
+      "url": "https://mcp.fakhryfernanda.my.id/sse"
+    }
+  }
+}
+```
+
+### Quick connectivity test
+
+```bash
+# Should return SSE endpoint event
+curl -s --max-time 3 https://mcp.fakhryfernanda.my.id/sse
+```
+
+Expected output:
+```
+event: endpoint
+data: /messages?sessionId=<uuid>
+```
 
 ## Tools
 
@@ -72,209 +123,65 @@ Returns an array of `{ path, snippet, lineNumber }` objects.
 
 ---
 
-## Deployment
+## Production Deployment
 
-### Fresh Deployment to VPS
+### PM2 Setup
 
-#### Prerequisites on VPS
-
-```bash
-# Install Node.js (Ubuntu/Debian example)
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install PM2 globally
-sudo npm install -g pm2
-
-# Install build tools (if needed)
-sudo apt-get install -y build-essential
-```
-
-#### Deploy Steps
-
-1. **Clone the repository**
+1. **Clone and build**
    ```bash
    git clone <repo-url> user-recognition-mcp
    cd user-recognition-mcp
-   ```
-
-2. **Install dependencies and build**
-   ```bash
    npm install
    npm run build
    ```
 
-3. **Configure environment**
+2. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env with your production settings
-   nano .env
    ```
 
-4. **Create logs directory**
+3. **Create logs directory**
    ```bash
    mkdir -p logs
    ```
 
-5. **Start with PM2**
+4. **Start with PM2**
    ```bash
    pm2 start ecosystem.config.cjs
    pm2 save
-   ```
-
-6. **Setup auto-start on boot**
-   ```bash
    pm2 startup
-   # Run the command PM2 outputs
-   ```
-
-7. **Verify**
-   ```bash
-   pm2 status
-   pm2 logs user-recognition-mcp
    ```
 
 ### Cloudflare Tunnel Setup
 
-#### 1. Install cloudflared
+1. **Add DNS route to your tunnel**
+   ```bash
+   cloudflared tunnel route dns <tunnel-id> mcp.fakhryfernanda.my.id
+   ```
 
-```bash
-# Ubuntu/Debian
-curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
-echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflared.list
-sudo apt-get update && sudo apt-get install -y cloudflared
+2. **Update `/etc/cloudflared/config.yml`**
+   ```yaml
+   tunnel: <tunnel-id>
+   credentials-file: /etc/cloudflared/<tunnel-id>.json
 
-# Or via npm
-sudo npm install -g cloudflared
-```
+   ingress:
+     - hostname: mcp.fakhryfernanda.my.id
+       service: http://localhost:3001
 
-#### 2. Authenticate
+     - service: http_status:404
+   ```
 
-```bash
-cloudflared tunnel login
-# Opens browser — select your Cloudflare account
-```
-
-#### 3. Create Tunnel
-
-```bash
-cloudflared tunnel create mcp-server
-# Outputs a tunnel ID: <TUNNEL_ID>
-# Creates credentials file: ~/.cloudflared/<TUNNEL_ID>.json
-```
-
-#### 4. Configure DNS Routing
-
-```bash
-cloudflared tunnel route dns mcp-server yourdomain.com
-# Replace with your actual domain
-```
-
-#### 5. Create Tunnel Config
-
-Create `~/.cloudflared/config.yml`:
-```yaml
-tunnel: <TUNNEL_ID>
-credentials-file: /home/deploy/.cloudflared/<TUNNEL_ID>.json
-
-ingress:
-  - hostname: yourdomain.com
-    service: http://localhost:3000
-  - service: http_status:404
-```
-
-#### 6. Run Cloudflared via PM2 (for persistence)
-
-```bash
-pm2 start cloudflared --name "cloudflared-tunnel" -- tunnel --config ~/.cloudflared/config.yml run
-pm2 save
-```
-
-#### 7. Verify
-
-```bash
-# Test tunnel connectivity
-curl https://yourdomain.com/sse
-
-# Check tunnel status in Cloudflare Dashboard → Zero Trust → Networks → Tunnels
-```
+3. **Restart cloudflared**
+   ```bash
+   sudo systemctl restart cloudflared
+   ```
 
 ### Code Update Workflow
 
 ```bash
-# 1. Navigate to project
 cd ~/user-recognition-mcp
-
-# 2. Pull latest changes
 git pull origin main
-
-# 3. Install any new dependencies
 npm install
-
-# 4. Rebuild TypeScript
 npm run build
-
-# 5. Restart PM2
 pm2 restart user-recognition-mcp
-
-# Verify
-pm2 logs user-recognition-mcp --lines 20
-```
-
-### Troubleshooting
-
-#### PM2: Server won't start
-
-```bash
-# Check logs
-pm2 logs user-recognition-mcp --lines 50
-
-# Common causes:
-# - Missing dependencies → run npm install
-# - Build failed → run npm run build and check for TypeScript errors
-# - Port already in use → change PORT in .env or kill the process: lsof -ti:3000 | xargs kill
-# - .env file missing → cp .env.example .env
-
-# Force restart
-pm2 delete user-recognition-mcp
-pm2 start ecosystem.config.js
-```
-
-#### Cloudflare Tunnel: Domain not resolving
-
-```bash
-# Check tunnel status
-pm2 status cloudflared-tunnel
-pm2 logs cloudflared-tunnel --lines 30
-
-# Verify tunnel is active
-cloudflared tunnel info mcp-server
-
-# Common causes:
-# - Tunnel not running → pm2 restart cloudflared-tunnel
-# - DNS not routed → cloudflared tunnel route dns mcp-server yourdomain.com
-# - Credentials file missing → re-run cloudflared tunnel login
-# - Port mismatch → ensure config.yml service points to correct localhost:PORT
-
-# Test locally first
-curl http://localhost:3000/sse
-# If this fails, fix the server before debugging the tunnel
-```
-
-#### Auto-start not working after reboot
-
-```bash
-# Verify PM2 startup is configured
-pm2 startup
-# Re-run the startup command if needed
-
-# Ensure saved state exists
-pm2 list
-pm2 save
-
-# Check systemd service (Ubuntu/Debian)
-systemctl status pm2-deploy
-
-# For cloudflared, ensure PM2 dump was saved
-pm2 dump
 ```
