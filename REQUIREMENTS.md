@@ -5,8 +5,8 @@
 ---
 
 ## Definition of Done (Project-wide)
-- [ ] All MCP tools can be called via MCP client without errors
-- [ ] Path traversal attacks confirmed unable to break out of context directory
+- [x] All MCP tools can be called via MCP client without errors
+- [x] Path traversal attacks confirmed unable to break out of context directory
 - [ ] Server runs with a single command locally and on VPS
 - [x] All env vars documented in .env.example
 
@@ -37,37 +37,37 @@
 
 ### Feature: As a developer, I want to expose list_files, read_file, and search_context tools via MCP over HTTP/SSE, so that Claude can access context files on-demand.
 
-#### Task: [Dev] Setup MCP server with HTTP/SSE transport
+#### Task: [Dev] Setup MCP server with HTTP/SSE transport ✅
 **Description:** Initialize McpServer from SDK with SSEServerTransport. Expose /sse and /messages endpoints. Load port and base URL from env vars. Server must be stateless.
 **Acceptance Criteria:**
-- [ ] Server listens on port configured via PORT env var
-- [ ] MCP client can connect via SSE
-- [ ] Server does not crash if client disconnects unexpectedly
-- [ ] Restarting server requires no more than one command
+- [x] Server listens on port configured via PORT env var
+- [x] MCP client can connect via SSE
+- [x] Server does not crash if client disconnects unexpectedly
+- [x] Restarting server requires no more than one command
 
-#### Task: [Dev] Implement list_files tool
+#### Task: [Dev] Implement list_files tool ✅
 **Description:** Tool accepts optional directory parameter. If empty, list root context dir. Return array of relative paths. Validate input with Zod.
 **Acceptance Criteria:**
-- [ ] Without argument, returns all files in context/ recursively
-- [ ] With argument "work", returns only files in context/work/
-- [ ] Arguments like "../etc" are rejected with a clear error
-- [ ] Return format is consistent: array of string relative paths
+- [x] Without argument, returns all files in context/ recursively
+- [x] With argument "work", returns only files in context/work/
+- [x] Arguments like "../etc" are rejected with a clear error
+- [x] Return format is consistent: array of string relative paths
 
-#### Task: [Dev] Implement read_file tool
+#### Task: [Dev] Implement read_file tool ✅
 **Description:** Tool accepts path parameter (relative to context dir). Read file and return its content as a string. Validate that resolved path remains inside the context directory.
 **Acceptance Criteria:**
-- [ ] Valid path returns full file content as string
-- [ ] Path traversal like "../../etc/passwd" returns an error, not the file
-- [ ] File not found returns an informative error
-- [ ] Large files (>1MB) can still be read without timeout
+- [x] Valid path returns full file content as string
+- [x] Path traversal like "../../etc/passwd" returns an error, not the file
+- [x] File not found returns an informative error
+- [x] Large files (>1MB) can still be read without timeout
 
-#### Task: [Dev] Implement search_context tool
+#### Task: [Dev] Implement search_context tool ✅
 **Description:** Tool accepts query parameter. Full-text search across all context files recursively. Return array of { path, snippet, lineNumber }. Search is case-insensitive.
 **Acceptance Criteria:**
-- [ ] Query found in files returns at least one match with a relevant snippet
-- [ ] Query not found returns empty array, not an error
-- [ ] Search is case-insensitive
-- [ ] Snippet includes at least 1 line of surrounding context around the match
+- [x] Query found in files returns at least one match with a relevant snippet
+- [x] Query not found returns empty array, not an error
+- [x] Search is case-insensitive
+- [x] Snippet includes at least 1 line of surrounding context around the match
 
 ---
 
@@ -75,13 +75,13 @@
 
 ### Feature: As a developer, I want all file operations validated against the context directory boundary, so that the server cannot be exploited to read files outside the context folder.
 
-#### Task: [Dev] Create resolveSafePath utility
+#### Task: [Dev] Create resolveSafePath utility ✅
 **Description:** Create a helper function that resolves path input to an absolute path, then verifies the result starts with the CONTEXT_DIR absolute path. If not, throw SecurityError.
 **Acceptance Criteria:**
-- [ ] Input "personal/background.md" resolves to a valid path inside context dir
-- [ ] Input "../../etc/passwd" throws SecurityError before file is accessed
-- [ ] Input with null bytes or unusual characters is rejected
-- [ ] All three tools use this helper with no bypass
+- [x] Input "personal/background.md" resolves to a valid path inside context dir
+- [x] Input "../../etc/passwd" throws SecurityError before file is accessed
+- [x] Input with null bytes or unusual characters is rejected
+- [x] All three tools use this helper with no bypass
 
 ---
 
