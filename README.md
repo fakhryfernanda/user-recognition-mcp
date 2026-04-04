@@ -15,6 +15,8 @@ cp .env.example .env
 # Edit .env to set PORT and CONTEXT_DIR if needed
 ```
 
+> **Note:** The `context/` directory is gitignored and will **not** be uploaded to GitHub. You must create and manage your own context files locally.
+
 ## Running locally
 
 ```bash
