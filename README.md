@@ -31,24 +31,47 @@ The server starts on the port defined in `.env` (default: `3001`).
 
 ## Connecting
 
+The server supports two MCP transport types:
+- **SSE (Server-Sent Events)** at `/sse` - Standard SSE-based transport
+- **Streamable HTTP** at `/mcp` - MCP Streamable HTTP transport (supports both SSE streaming and direct HTTP responses)
+
 ### Via mcp-inspector
 
-**Local development:**
+**SSE transport (local):**
 ```bash
 npx @modelcontextprotocol/inspector http://localhost:3001/sse
 ```
 
+**Streamable HTTP transport (local):**
+```bash
+npx @modelcontextprotocol/inspector http://localhost:3001/mcp
+```
+
 **Production (via Cloudflare Tunnel):**
 ```bash
+# SSE transport
 npx @modelcontextprotocol/inspector https://mcp.fakhryfernanda.my.id/sse
+
+# Streamable HTTP transport
+npx @modelcontextprotocol/inspector https://mcp.fakhryfernanda.my.id/mcp
 ```
 
 Open the inspector UI in your browser. All tools will appear in the tool list.
 
 ### Via MCP client config (Claude Desktop / Cursor / Windsurf)
 
-Add this to your MCP client's `mcp.json` or equivalent config:
+**Using Streamable HTTP transport (recommended):**
+```json
+{
+  "mcpServers": {
+    "user-recognition": {
+      "url": "https://mcp.fakhryfernanda.my.id/mcp"
+    }
+  }
+}
+```
 
+**Using SSE transport:**
 ```json
 {
   "mcpServers": {
@@ -63,8 +86,7 @@ Add this to your MCP client's `mcp.json` or equivalent config:
 }
 ```
 
-Or with a direct HTTP SSE transport if your client supports it:
-
+Or with direct SSE URL if your client supports it:
 ```json
 {
   "mcpServers": {
@@ -77,6 +99,7 @@ Or with a direct HTTP SSE transport if your client supports it:
 
 ### Quick connectivity test
 
+**SSE endpoint:**
 ```bash
 # Should return SSE endpoint event
 curl -s --max-time 3 https://mcp.fakhryfernanda.my.id/sse
@@ -86,6 +109,30 @@ Expected output:
 ```
 event: endpoint
 data: /messages?sessionId=<uuid>
+```
+
+**Streamable HTTP endpoint:**
+```bash
+# Should return initialization response
+curl -X POST https://mcp.fakhryfernanda.my.id/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {},
+      "clientInfo": {"name": "test", "version": "1.0.0"}
+    }
+  }'
+```
+
+Expected output (SSE format):
+```
+event: message
+data: {"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"user-recognition","version":"1.0.0"}},"jsonrpc":"2.0","id":1}
 ```
 
 ## Tools

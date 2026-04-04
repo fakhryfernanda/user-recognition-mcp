@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { registerListFiles } from './tools/listFiles.js';
 import { registerReadFile } from './tools/readFile.js';
 import { registerSearchContext } from './tools/searchContext.js';
@@ -11,6 +12,7 @@ import { registerEditFile } from './tools/editFile.js';
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
 const app = express();
+app.use(express.json());
 
 // Track transports by session id for stateless SSE handling
 const transports: Record<string, SSEServerTransport> = {};
@@ -49,7 +51,29 @@ app.post('/messages', async (req, res) => {
   await transport.handlePostMessage(req, res);
 });
 
+// Streamable HTTP transport endpoint
+app.post('/mcp', async (req, res) => {
+  const server = new McpServer({
+    name: 'user-recognition',
+    version: '1.0.0',
+  });
+
+  registerListFiles(server);
+  registerReadFile(server);
+  registerSearchContext(server);
+  registerListDirectories(server);
+  registerEditFile(server);
+
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: undefined, // Stateless mode
+  });
+
+  await server.connect(transport);
+  await transport.handleRequest(req, res, req.body);
+});
+
 app.listen(PORT, () => {
   console.log(`User Recognition MCP Server running on port ${PORT}`);
   console.log(`SSE endpoint: http://localhost:${PORT}/sse`);
+  console.log(`Streamable HTTP endpoint: http://localhost:${PORT}/mcp`);
 });
