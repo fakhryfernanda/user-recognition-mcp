@@ -110,7 +110,7 @@
 ### Feature: As a developer, I want the server running persistently on VPS and accessible via custom domain through Cloudflare Tunnel, so that the MCP server can be accessed from anywhere.
 
 #### Task: [DevOps] Setup server build and PM2 on VPS ✅
-**Description:** On VPS: clone repo, install dependencies, build TypeScript. Install PM2. Create ecosystem.config.js. Setup pm2 startup for auto-start after reboot.
+**Description:** On VPS: clone repo, install dependencies, build TypeScript. Install PM2. Create ecosystem.config.cjs. Setup pm2 startup for auto-start after reboot.
 **Acceptance Criteria:**
 - [x] Server runs via PM2 with status online
 - [x] After VPS reboot, server starts automatically

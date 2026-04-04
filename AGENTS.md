@@ -32,7 +32,7 @@ project-root/
 │   └── social/
 ├── .env                  # Env vars — DO NOT TOUCH
 ├── .env.example          # Env vars template
-├── ecosystem.config.js   # PM2 config — DO NOT TOUCH
+├── ecosystem.config.cjs  # PM2 config — DO NOT TOUCH
 ├── tsconfig.json
 └── package.json
 ```
@@ -79,6 +79,6 @@ npm start
 
 ## Agent Scope
 
-The agent may modify: `src/`, `tsconfig.json`, `package.json`, `.env.example`, `README.md`, `ecosystem.config.js` (only if explicitly asked).
+The agent may modify: `src/`, `tsconfig.json`, `package.json`, `.env.example`, `README.md`, `ecosystem.config.cjs` (only if explicitly asked).
 
 The agent must not touch: anything inside `context/`, the `.env` file, and must never read or print the contents of any context file to any output.
