@@ -96,12 +96,12 @@
 - [x] Changing PORT in .env changes server port without code changes
 - [x] .env is not committed to git
 
-#### Task: [Dev] Verify tools via mcp-inspector
+#### Task: [Dev] Verify tools via mcp-inspector ✅
 **Description:** Test all three tools using mcp-inspector or another MCP client. Document how to connect in README.md.
 **Acceptance Criteria:**
-- [ ] All three tools appear in MCP client tool list
-- [ ] Each tool can be called and returns the correct response
-- [ ] README.md contains connection instructions for local dev
+- [x] All three tools appear in MCP client tool list
+- [x] Each tool can be called and returns the correct response
+- [x] README.md contains connection instructions for local dev
 
 ---
 

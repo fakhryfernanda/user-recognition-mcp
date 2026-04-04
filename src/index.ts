@@ -5,11 +5,11 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { registerListFiles } from './tools/listFiles.js';
 import { registerReadFile } from './tools/readFile.js';
 import { registerSearchContext } from './tools/searchContext.js';
+import { registerListDirectories } from './tools/listDirectories.js';
 
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
 const app = express();
-app.use(express.json());
 
 // Track transports by session id for stateless SSE handling
 const transports: Record<string, SSEServerTransport> = {};
@@ -23,6 +23,7 @@ app.get('/sse', async (req, res) => {
   registerListFiles(server);
   registerReadFile(server);
   registerSearchContext(server);
+  registerListDirectories(server);
 
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
