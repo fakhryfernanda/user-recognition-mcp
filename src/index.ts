@@ -1,6 +1,4 @@
 import 'dotenv/config';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import express from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
@@ -13,6 +11,7 @@ import { registerEditFile } from './tools/editFile.js';
 import { registerCreateFile } from './tools/createFile.js';
 import { registerDeleteFile } from './tools/deleteFile.js';
 import { registerWriteFile } from './tools/writeFile.js';
+import { registerGetStarted } from './tools/getStarted.js';
 import { registerAddTodo } from './tools/todo/addTodo.js';
 import { registerListTodos } from './tools/todo/listTodos.js';
 import { registerCompleteTodo } from './tools/todo/completeTodo.js';
@@ -46,6 +45,7 @@ app.get('/sse', async (req, res) => {
   registerCompleteTodo(server);
   registerDeleteTodo(server);
   registerUpdateTodo(server);
+  registerGetStarted(server);
 
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
@@ -69,19 +69,6 @@ app.post('/messages', async (req, res) => {
   await transport.handlePostMessage(req, res);
 });
 
-app.get('/get-started', (_req, res) => {
-  const welcomePath = process.env.WELCOME_FILE ?? './context/WELCOME.md';
-  const welcomeFile = resolve(process.cwd(), welcomePath);
-  try {
-    const content = readFileSync(welcomeFile, 'utf-8');
-    res.type('text/plain').send(content);
-  } catch {
-    res
-      .type('text/plain')
-      .send('This server provides access to personal context files. Call list_files to get started.');
-  }
-});
-
 // Streamable HTTP transport endpoint
 app.post('/mcp', async (req, res) => {
   const server = new McpServer({
@@ -102,6 +89,7 @@ app.post('/mcp', async (req, res) => {
   registerCompleteTodo(server);
   registerDeleteTodo(server);
   registerUpdateTodo(server);
+  registerGetStarted(server);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // Stateless mode
@@ -115,5 +103,4 @@ app.listen(PORT, () => {
   console.log(`User Recognition MCP Server running on port ${PORT}`);
   console.log(`SSE endpoint: http://localhost:${PORT}/sse`);
   console.log(`Streamable HTTP endpoint: http://localhost:${PORT}/mcp`);
-  console.log(`Get started: http://localhost:${PORT}/get-started`);
 });

@@ -137,6 +137,11 @@ data: {"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{"listCh
 
 ## Tools
 
+### `get_started`
+Returns onboarding instructions for this server. Call this first to understand available tools and how to navigate the context directory.
+
+No parameters. Returns the contents of `WELCOME_FILE` (default: `context/WELCOME.md`), or a default message if the file doesn't exist.
+
 ### `list_files`
 Lists files in the context directory.
 
@@ -329,17 +334,9 @@ Delete a file from the context directory.
 
 **Note:** The tool only deletes files (not directories) and validates the file exists before deletion.
 
-## Get Started Endpoint
+## Onboarding Instructions
 
-`GET /get-started` returns the contents of `WELCOME_FILE` as plain text. AI agents can call this endpoint to receive onboarding instructions before using any tools.
-
-```bash
-curl https://mcp.fakhryfernanda.my.id/get-started
-```
-
-- Returns the contents of `WELCOME_FILE` (default: `context/WELCOME.md`)
-- Falls back to a default message if the file doesn't exist
-- Reads the file fresh on each request — no restart needed after edits
+Create `context/WELCOME.md` with onboarding content for AI agents. The `get_started` MCP tool returns this file's contents so agents can call it to understand the server before using other tools.
 
 **Example WELCOME.md structure:**
 - Overview of available tools
