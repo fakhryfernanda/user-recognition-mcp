@@ -32,6 +32,7 @@ app.get('/sse', async (req, res) => {
     version: '1.0.0',
   });
 
+  registerGetStarted(server);
   registerListFiles(server);
   registerReadFile(server);
   registerSearchContext(server);
@@ -45,7 +46,6 @@ app.get('/sse', async (req, res) => {
   registerCompleteTodo(server);
   registerDeleteTodo(server);
   registerUpdateTodo(server);
-  registerGetStarted(server);
 
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
@@ -76,6 +76,7 @@ app.post('/mcp', async (req, res) => {
     version: '1.0.0',
   });
 
+  registerGetStarted(server);
   registerListFiles(server);
   registerReadFile(server);
   registerSearchContext(server);
@@ -89,7 +90,6 @@ app.post('/mcp', async (req, res) => {
   registerCompleteTodo(server);
   registerDeleteTodo(server);
   registerUpdateTodo(server);
-  registerGetStarted(server);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // Stateless mode
