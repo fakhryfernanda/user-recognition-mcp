@@ -13,6 +13,11 @@ import { registerEditFile } from './tools/editFile.js';
 import { registerCreateFile } from './tools/createFile.js';
 import { registerDeleteFile } from './tools/deleteFile.js';
 import { registerWriteFile } from './tools/writeFile.js';
+import { registerAddTodo } from './tools/todo/addTodo.js';
+import { registerListTodos } from './tools/todo/listTodos.js';
+import { registerCompleteTodo } from './tools/todo/completeTodo.js';
+import { registerDeleteTodo } from './tools/todo/deleteTodo.js';
+import { registerUpdateTodo } from './tools/todo/updateTodo.js';
 
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
@@ -56,6 +61,11 @@ app.get('/sse', async (req, res) => {
   registerCreateFile(server);
   registerDeleteFile(server);
   registerWriteFile(server);
+  registerAddTodo(server);
+  registerListTodos(server);
+  registerCompleteTodo(server);
+  registerDeleteTodo(server);
+  registerUpdateTodo(server);
 
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
@@ -99,6 +109,11 @@ app.post('/mcp', async (req, res) => {
   registerCreateFile(server);
   registerDeleteFile(server);
   registerWriteFile(server);
+  registerAddTodo(server);
+  registerListTodos(server);
+  registerCompleteTodo(server);
+  registerDeleteTodo(server);
+  registerUpdateTodo(server);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // Stateless mode

@@ -209,6 +209,46 @@ Write full content to a context file, creating it if it doesn't exist or overwri
 - Overwrites existing files without warning
 - Use `edit_file` for surgical changes; use `write_file` for complete rewrites
 
+### `add_todo`
+Add a new to-do item to the list.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `text` | string | Yes | The to-do item text |
+| `reference` | string | No | Path to a markdown file in the context directory (e.g. `"work/project.md"`) |
+
+### `list_todos`
+List to-do items, optionally filtered by status.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `filter` | `"all"` \| `"done"` \| `"pending"` | No | Filter by status (default: `"all"`) |
+
+### `complete_todo`
+Mark a to-do item as done.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | The id of the to-do item |
+
+### `update_todo`
+Edit the text and/or reference of an existing to-do item. At least one of `text` or `reference` must be provided.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | The id of the to-do item |
+| `text` | string | No | New text for the item |
+| `reference` | string | No | Path to a markdown file in the context directory |
+
+### `delete_todo`
+Remove a to-do item by id.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | number | Yes | The id of the to-do item to delete |
+
+**Note:** To-do data is persisted in `context/todos.json`.
+
 ---
 
 ## Security & Limitations
