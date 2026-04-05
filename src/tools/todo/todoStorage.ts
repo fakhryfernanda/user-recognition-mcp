@@ -6,6 +6,7 @@ export interface Todo {
   text: string;
   done: boolean;
   createdAt: string;
+  dueDate?: string;
   reference?: string;
 }
 

@@ -22,9 +22,12 @@ export function registerListTodos(server: McpServer): void {
         return { content: [{ type: 'text', text: 'No todos found.' }] };
       }
 
-      const lines = filtered.map(
-        (t) => `[${t.done ? 'x' : ' '}] #${t.id} ${t.text}${t.reference ? ` → ${t.reference}` : ''}`,
-      );
+      const lines = filtered.map((t) => {
+        const created = `Created: ${t.createdAt.slice(0, 10)}`;
+        const due = t.dueDate ? ` | Due: ${t.dueDate.slice(0, 10)}` : '';
+        const ref = t.reference ? ` → ${t.reference}` : '';
+        return `[${t.done ? 'x' : ' '}] #${t.id} ${t.text}${ref} | ${created}${due}`;
+      });
       return { content: [{ type: 'text', text: lines.join('\n') }] };
     },
   );

@@ -215,14 +215,21 @@ Add a new to-do item to the list.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `text` | string | Yes | The to-do item text |
+| `dueDate` | string | No | Due date in ISO format (e.g. `"2026-04-10"`) |
 | `reference` | string | No | Path to a markdown file in the context directory (e.g. `"work/project.md"`) |
 
 ### `list_todos`
-List to-do items, optionally filtered by status.
+List to-do items, optionally filtered by status. Each item shows its creation date and due date (if set).
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `filter` | `"all"` \| `"done"` \| `"pending"` | No | Filter by status (default: `"all"`) |
+
+**Example output:**
+```
+[ ] #1 Buy milk | Created: 2026-04-05 | Due: 2026-04-10
+[x] #2 Write tests | Created: 2026-03-20
+```
 
 ### `complete_todo`
 Mark a to-do item as done.
@@ -238,6 +245,7 @@ Edit the text and/or reference of an existing to-do item. At least one of `text`
 |-----------|------|----------|-------------|
 | `id` | number | Yes | The id of the to-do item |
 | `text` | string | No | New text for the item |
+| `dueDate` | string | No | Due date in ISO format (e.g. `"2026-04-10"`) |
 | `reference` | string | No | Path to a markdown file in the context directory |
 
 ### `delete_todo`

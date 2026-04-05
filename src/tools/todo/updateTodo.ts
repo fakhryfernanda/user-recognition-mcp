@@ -9,9 +9,10 @@ export function registerUpdateTodo(server: McpServer): void {
     {
       id: z.number().int().positive(),
       text: z.string().min(1).optional(),
+      dueDate: z.string().min(1).optional(),
       reference: z.string().min(1).optional(),
     },
-    ({ id, text, reference }) => {
+    ({ id, text, dueDate, reference }) => {
       const todos = readTodos();
       const todo = todos.find((t) => t.id === id);
       if (!todo) {
@@ -20,9 +21,9 @@ export function registerUpdateTodo(server: McpServer): void {
           isError: true,
         };
       }
-      if (!text && reference === undefined) {
+      if (!text && dueDate === undefined && reference === undefined) {
         return {
-          content: [{ type: 'text', text: 'Provide at least one of: text, reference.' }],
+          content: [{ type: 'text', text: 'Provide at least one of: text, dueDate, reference.' }],
           isError: true,
         };
       }
@@ -30,6 +31,10 @@ export function registerUpdateTodo(server: McpServer): void {
       if (text) {
         changes.push(`text: "${todo.text}" → "${text}"`);
         todo.text = text;
+      }
+      if (dueDate !== undefined) {
+        changes.push(`dueDate: ${dueDate}`);
+        todo.dueDate = dueDate;
       }
       if (reference !== undefined) {
         changes.push(`reference: ${reference}`);
