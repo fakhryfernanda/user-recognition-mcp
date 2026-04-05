@@ -99,6 +99,17 @@ app.post('/mcp', async (req, res) => {
   await transport.handleRequest(req, res, req.body);
 });
 
+app.get('/mcp', async (req, res) => {
+  res.status(405).json({
+    jsonrpc: '2.0',
+    error: {
+      code: -32000,
+      message: 'Method not allowed: server runs in stateless mode',
+    },
+    id: null,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`User Recognition MCP Server running on port ${PORT}`);
   console.log(`SSE endpoint: http://localhost:${PORT}/sse`);

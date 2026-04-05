@@ -33,7 +33,7 @@ The server starts on the port defined in `.env` (default: `3001`).
 
 The server supports two MCP transport types:
 - **SSE (Server-Sent Events)** at `/sse` - Standard SSE-based transport
-- **Streamable HTTP** at `/mcp` - MCP Streamable HTTP transport (supports both SSE streaming and direct HTTP responses)
+- **Streamable HTTP** at `/mcp` - MCP Streamable HTTP transport (stateless mode, POST-only)
 
 ### Via mcp-inspector
 
