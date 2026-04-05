@@ -329,13 +329,17 @@ Delete a file from the context directory.
 
 **Note:** The tool only deletes files (not directories) and validates the file exists before deletion.
 
-## Server Instructions
+## Get Started Endpoint
 
-The server can provide onboarding instructions to AI agents via a WELCOME.md file:
+`GET /get-started` returns the contents of `WELCOME_FILE` as plain text. AI agents can call this endpoint to receive onboarding instructions before using any tools.
 
-1. Create `context/WELCOME.md` with your onboarding content
-2. The server automatically reads it at startup and provides it as instructions to connecting agents
-3. If the file doesn't exist, a default fallback message is used
+```bash
+curl https://mcp.fakhryfernanda.my.id/get-started
+```
+
+- Returns the contents of `WELCOME_FILE` (default: `context/WELCOME.md`)
+- Falls back to a default message if the file doesn't exist
+- Reads the file fresh on each request — no restart needed after edits
 
 **Example WELCOME.md structure:**
 - Overview of available tools
@@ -348,7 +352,7 @@ The server can provide onboarding instructions to AI agents via a WELCOME.md fil
 |----------|---------|-------------|
 | `PORT` | `3000` | Port the server listens on |
 | `CONTEXT_DIR` | `./context` | Absolute or relative path to the context directory |
-| `WELCOME_FILE` | `./context/WELCOME.md` | Path to the server instructions file for AI agents |
+| `WELCOME_FILE` | `./context/WELCOME.md` | Path to the onboarding file served at `GET /get-started` |
 
 ---
 

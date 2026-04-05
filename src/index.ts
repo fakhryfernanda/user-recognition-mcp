@@ -21,21 +21,6 @@ import { registerUpdateTodo } from './tools/todo/updateTodo.js';
 
 const PORT = parseInt(process.env.PORT ?? '3000', 10);
 
-const welcomePath = process.env.WELCOME_FILE ?? './context/WELCOME.md';
-const welcomeFile = resolve(process.cwd(), welcomePath);
-let SERVER_INSTRUCTIONS: string;
-
-try {
-  SERVER_INSTRUCTIONS = readFileSync(welcomeFile, 'utf-8');
-} catch {
-  console.warn(
-    `Warning: Welcome file not found at "${welcomeFile}". ` +
-      `Check your WELCOME_FILE env var. Using fallback instructions.`,
-  );
-  SERVER_INSTRUCTIONS =
-    'This server provides access to personal context files. Call list_files to get started.';
-}
-
 const app = express();
 app.use(express.json());
 
@@ -43,15 +28,10 @@ app.use(express.json());
 const transports: Record<string, SSEServerTransport> = {};
 
 app.get('/sse', async (req, res) => {
-  const server = new McpServer(
-    {
-      name: 'user-recognition',
-      version: '1.0.0',
-    },
-    {
-      instructions: SERVER_INSTRUCTIONS,
-    },
-  );
+  const server = new McpServer({
+    name: 'user-recognition',
+    version: '1.0.0',
+  });
 
   registerListFiles(server);
   registerReadFile(server);
@@ -89,17 +69,25 @@ app.post('/messages', async (req, res) => {
   await transport.handlePostMessage(req, res);
 });
 
+app.get('/get-started', (_req, res) => {
+  const welcomePath = process.env.WELCOME_FILE ?? './context/WELCOME.md';
+  const welcomeFile = resolve(process.cwd(), welcomePath);
+  try {
+    const content = readFileSync(welcomeFile, 'utf-8');
+    res.type('text/plain').send(content);
+  } catch {
+    res
+      .type('text/plain')
+      .send('This server provides access to personal context files. Call list_files to get started.');
+  }
+});
+
 // Streamable HTTP transport endpoint
 app.post('/mcp', async (req, res) => {
-  const server = new McpServer(
-    {
-      name: 'user-recognition',
-      version: '1.0.0',
-    },
-    {
-      instructions: SERVER_INSTRUCTIONS,
-    },
-  );
+  const server = new McpServer({
+    name: 'user-recognition',
+    version: '1.0.0',
+  });
 
   registerListFiles(server);
   registerReadFile(server);
@@ -127,4 +115,5 @@ app.listen(PORT, () => {
   console.log(`User Recognition MCP Server running on port ${PORT}`);
   console.log(`SSE endpoint: http://localhost:${PORT}/sse`);
   console.log(`Streamable HTTP endpoint: http://localhost:${PORT}/mcp`);
+  console.log(`Get started: http://localhost:${PORT}/get-started`);
 });
